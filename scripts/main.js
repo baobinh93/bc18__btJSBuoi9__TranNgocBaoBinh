@@ -31,6 +31,8 @@ const tableForRenderDsNv = $("#dsNhanVienList");
 const updateUserBtnEl = $("#updateUserBtn");
 
 const openModalAddUserBtnEl = $("#openModalAddUserBtn");
+
+const searchNvBtnEl = $("#searchNvBtn");
 // --- Object  Contructor
 function NhanVien(_ma, _ten, _email, _pass, _dateOfBirth, _job) {
   this.ma = _ma;
@@ -42,32 +44,38 @@ function NhanVien(_ma, _ten, _email, _pass, _dateOfBirth, _job) {
 }
 
 // Mẫu cho danh sách nhân viên
-const danhSachNhanVien = [];
-let nv1 = new NhanVien(
-  "123",
-  "Bình",
-  "binh@gmail.com",
-  12,
-  "1993-09-14",
-  "Sếp"
-);
-let nv2 = new NhanVien(
-  "126",
-  "Nhật",
-  "hangn@gmail.com",
-  12,
-  "1998-12-09",
-  "Thư Ký"
-);
-let nv3 = new NhanVien(
-  "186a",
-  "Tuấn",
-  "tuann@gmail.com",
-  "18",
-  "1980-09-14",
-  "Nhân Viên"
-);
-danhSachNhanVien.push(nv1, nv2, nv3);
+let danhSachNhanVien = [];
+if (nhanDulieu()) {
+  let data = nhanDulieu();
+  danhSachNhanVien = data;
+} else {
+  let nv1 = new NhanVien(
+    "123",
+    "Bình",
+    "binh@gmail.com",
+    12,
+    "1993-09-14",
+    "Sếp"
+  );
+  let nv2 = new NhanVien(
+    "126",
+    "Nhật",
+    "hangn@gmail.com",
+    12,
+    "1998-12-09",
+    "Thư Ký"
+  );
+  let nv3 = new NhanVien(
+    "186a",
+    "Tuấn",
+    "tuann@gmail.com",
+    "18",
+    "1980-09-14",
+    "Nhân Viên"
+  );
+  danhSachNhanVien.push(nv1, nv2, nv3);
+}
+
 tableForRenderDsNv.innerHTML = renderDsNv(danhSachNhanVien);
 
 // --- Function Validation---
@@ -149,6 +157,7 @@ themNhanVienBtn.onclick = () => {
     danhSachNhanVien.push(nhanVienMoi);
     tableForRenderDsNv.innerHTML = renderDsNv(danhSachNhanVien);
     resetForm();
+    luuDuLieu(danhSachNhanVien);
     alert("Thêm thành công");
   }
 };
@@ -261,7 +270,7 @@ updateUserBtnEl.onclick = () => {
     nhanVienCanSua.job = chucVuNv;
 
     tableForRenderDsNv.innerHTML = renderDsNv(danhSachNhanVien);
-
+    luuDuLieu(danhSachNhanVien);
     alert("Sửa thành công");
   }
 };
@@ -273,7 +282,29 @@ function removeUser(_maNv) {
       return _maNv == nhanVien.ma;
     });
     danhSachNhanVien.splice(vitriNhanVien, 1);
+    luuDuLieu(danhSachNhanVien);
     tableForRenderDsNv.innerHTML = renderDsNv(danhSachNhanVien);
     console.log(danhSachNhanVien);
   }
+}
+
+// Hàm tìm nhân viên theo tên
+function searchByName(name) {
+  let result = danhSachNhanVien.filter(function (nv) {
+    return nv.ten === name;
+  });
+  return result;
+}
+
+// Hàm lưu dữ liệu vào Local Storage
+function luuDuLieu(arr) {
+  const data = JSON.stringify(arr);
+  localStorage.setItem("ListNhanVien", data);
+}
+
+// Hàm lấy dữ liệu
+function nhanDulieu() {
+  const dataGet = localStorage.getItem("ListNhanVien");
+  let data = JSON.parse(dataGet);
+  return data;
 }
